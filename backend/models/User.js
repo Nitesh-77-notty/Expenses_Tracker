@@ -14,6 +14,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  emailVerificationToken: {
+    type: String,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.model("User", userSchema);
