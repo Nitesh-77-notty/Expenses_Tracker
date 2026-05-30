@@ -11,7 +11,7 @@ const sendEmail = async ({ to, subject, html }) => {
     });
 
     const info = await transporter.sendMail({
-      from: `"Flux" <${process.env.EMAIL_USER}>`,
+      from: `"Expense Tracker" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
