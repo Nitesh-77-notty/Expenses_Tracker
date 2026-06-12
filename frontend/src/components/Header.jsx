@@ -53,22 +53,22 @@ const NOTIFICATIONS = [
   },
 ];
 
-export default function Header({
-  title: overrideTitle,
-  sidebarWidth = 240,
-}) {
+export default function Header({ title: overrideTitle, sidebarWidth = 240 }) {
   const location = useLocation();
   const { user, logout } = useAuth();
-  
+
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [notifs, setNotifs] = useState(NOTIFICATIONS);
 
   const unreadCount = notifs.filter((n) => n.unread).length;
-  
+
   // Resolve page info based on path or override prop
   const path = location.pathname;
-  const pageInfo = PAGES[path] || { title: "SpendWise", subtitle: "Manage your finances" };
+  const pageInfo = PAGES[path] || {
+    title: "SpendWise",
+    subtitle: "Manage your finances",
+  };
   const displayTitle = overrideTitle || pageInfo.title;
   const displaySubtitle = pageInfo.subtitle;
 
@@ -97,16 +97,13 @@ export default function Header({
             {displayTitle}
           </h1>
           {displaySubtitle && (
-            <p className="text-xs text-gray-400 mt-0.5">
-              {displaySubtitle}
-            </p>
+            <p className="text-xs text-gray-400 mt-0.5">{displaySubtitle}</p>
           )}
         </div>
       </div>
 
       {/* Right Side: Notification Icon & Profile Icon */}
       <div className="flex items-center gap-3">
-        
         {/* Notifications Icon with Dropdown */}
         <div className="relative">
           <button
@@ -170,9 +167,7 @@ export default function Header({
                       <p className="text-xs text-gray-800 leading-normal">
                         {n.text}
                       </p>
-                      <p className="text-[11px] text-gray-400 mt-1">
-                        {n.time}
-                      </p>
+                      <p className="text-[11px] text-gray-400 mt-1">{n.time}</p>
                     </div>
                   </div>
                 ))}
