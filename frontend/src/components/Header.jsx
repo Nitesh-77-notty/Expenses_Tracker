@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import MainButton from "./MainButton.jsx";
+import { Menu, X } from "lucide-react";
 
 const PAGES = {
   "/": {
@@ -98,18 +99,23 @@ export default function Header({
 
   return (
     <header
-      className="h-16 bg-white border-b border-gray-200 flex items-center px-6 gap-4 fixed top-0 right-0 z-40 transition-[left] duration-250 ease-in-out"
+      className="h-16 bg-white border-b border-gray-200 flex items-center md:p-7 gap-4 fixed top-0 right-0 z-40 transition-[left] duration-250 ease-in-out"
       style={{ left: `${sidebarWidth}px` }}
     >
-      {/* Left: Dynamic Title */}
-      <div className="flex-1 min-w-0">
-        <div>
-          <h1 className="text-base font-bold text-gray-900 tracking-tight leading-tight">
-            {displayTitle}
-          </h1>
-          {displaySubtitle && (
-            <p className="text-xs text-gray-400 mt-0.5">{displaySubtitle}</p>
-          )}
+      <div className="flex items-center gap-2 p-1">
+        <div className="md:hidden ">
+          <Menu size={16} />
+        </div>
+        {/* Left: Dynamic Title */}
+        <div className="flex-1 min-w-0">
+          <div>
+            <h1 className="md:text-[20px] font-bold text-gray-900 tracking-tight leading-tight">
+              {displayTitle}
+            </h1>
+            {displaySubtitle && (
+              <p className="text-xs text-gray-400 mt-0.5">{displaySubtitle}</p>
+            )}
+          </div>
         </div>
       </div>
 
