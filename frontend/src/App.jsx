@@ -6,10 +6,12 @@ import Expenses from "./pages/Expenses";
 import Categories from "./pages/Categories";
 import Budgets from "./pages/Budgets";
 import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<Login />} />
       <Route
         path="/"
         element={
