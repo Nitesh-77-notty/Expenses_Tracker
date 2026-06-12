@@ -3,6 +3,7 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
+import AppError from "../utils/AppError.js";
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
