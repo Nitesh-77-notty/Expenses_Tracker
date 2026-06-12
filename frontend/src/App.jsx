@@ -7,11 +7,14 @@ import Categories from "./pages/Categories";
 import Budgets from "./pages/Budgets";
 import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
+import Register from "./pages/Register.jsx";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
       <Route
         path="/"
         element={
