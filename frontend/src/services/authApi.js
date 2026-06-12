@@ -5,8 +5,8 @@ export const register = async (data) => {
     "/auth/register",
     {
       method: "POST",
-      header: {
-        "Content-Type": "application.json",
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     },
