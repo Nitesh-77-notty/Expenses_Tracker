@@ -1,31 +1,38 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import MainButton from "./MainButton.jsx";
 
 const PAGES = {
   "/": {
     title: "Dashboard",
     subtitle: "Your financial overview",
+    buttonName: null,
   },
   "/dashboard": {
     title: "Dashboard",
     subtitle: "Your financial overview",
+    buttonName: null,
   },
   "/expenses": {
     title: "Expenses",
     subtitle: "Track all your spending",
+    buttonName: "Add expense",
   },
   "/budgets": {
     title: "Budget",
     subtitle: "Manage your monthly limits",
+    buttonName: "Add budget",
   },
   "/analytics": {
     title: "Analytics",
     subtitle: "Insights and trends",
+    buttonName: null,
   },
   "/categories": {
     title: "Categories",
     subtitle: "Organise your spending",
+    buttonName: "Add category",
   },
 };
 
@@ -53,7 +60,11 @@ const NOTIFICATIONS = [
   },
 ];
 
-export default function Header({ title: overrideTitle, sidebarWidth = 240 }) {
+export default function Header({
+  title: overrideTitle,
+  sidebarWidth = 240,
+  onButtonClick,
+}) {
   const location = useLocation();
   const { user, logout } = useAuth();
 
@@ -181,6 +192,9 @@ export default function Header({ title: overrideTitle, sidebarWidth = 240 }) {
           )}
         </div>
 
+        {pageInfo.buttonName && (
+          <MainButton onClick={onButtonClick}>{pageInfo.buttonName}</MainButton>
+        )}
         {/* Profile / User Info */}
         <div className="relative">
           <button

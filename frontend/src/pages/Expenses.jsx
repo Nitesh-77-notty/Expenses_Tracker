@@ -114,25 +114,8 @@ const Expenses = () => {
 
   return (
     <div className="p-6">
-      {/* Topbar */}
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">Expenses</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Track and manage all your expense logs
-          </p>
-        </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition-colors"
-        >
-          + Add expense
-        </button>
-      </div>
-
-      {/* Filters */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 max-w-xs">
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 ">
           <svg
             className="w-4 h-4 text-gray-400"
             fill="none"
@@ -151,7 +134,7 @@ const Expenses = () => {
             placeholder="Search expenses..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent text-sm text-gray-900 outline-none w-full placeholder-gray-400"
+            className="bg-transparent text-sm text-gray-900 outline-none w-full  placeholder-gray-400"
           />
         </div>
         <select
