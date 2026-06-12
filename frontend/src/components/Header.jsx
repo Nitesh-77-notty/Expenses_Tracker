@@ -99,7 +99,7 @@ export default function Header({
 
   return (
     <header
-      className="h-16 bg-white border-b border-gray-200 flex items-center md:p-7 gap-4 fixed top-0 right-0 z-40 transition-[left] duration-250 ease-in-out"
+      className="h-16 bg-white border-b border-gray-200 flex items-center md:p-7 gap-4 fixed top-0 right-0 z-40 transition-[left] duration-250 ease-in-out justify-between"
       style={{ left: `${sidebarWidth}px` }}
     >
       <div className="flex items-center gap-2 p-1">
