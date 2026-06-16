@@ -9,8 +9,11 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
+  const { user, logout } = useAuth();
   const navItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Expenses", path: "/expenses", icon: ReceiptText },
@@ -20,8 +23,17 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    // Placeholder logout function
-    console.log("Logging out...");
+    logout();
+    toast.success("Logged out successfully");
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   return (
@@ -76,14 +88,14 @@ const Sidebar = () => {
         {/* User Profile Info */}
         <div className="flex items-center gap-3 px-2 py-1.5">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-            AJ
+            {getInitials(user?.username)}
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-xs font-semibold text-gray-900 truncate">
-              Alex Johnson
+              {user?.username || "Guest User"}
             </span>
             <span className="text-[10px] text-gray-400 truncate">
-              alex@example.com
+              {user?.email || "No email"}
             </span>
           </div>
         </div>

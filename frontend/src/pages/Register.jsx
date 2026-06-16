@@ -1,6 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const { register, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.success) {
+        toast.success("Registration successful! Please verify your email.");
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: ""
+        });
+        navigate("/login");
+      }
+    } catch (err) {
+      toast.error(err.message || "Registration failed");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] flex">
       <div className="flex-1 flex items-center justify-center p-6">
@@ -14,15 +64,19 @@ const Register = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="block mb-2 text-sm font-medium">
-                Full Name
+                Username
               </label>
               <input
                 type="text"
-                placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)]"
+                placeholder="johndoe"
+                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
               />
             </div>
 
@@ -31,7 +85,11 @@ const Register = () => {
               <input
                 type="email"
                 placeholder="john@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)]"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
               />
             </div>
 
@@ -40,7 +98,11 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)]"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
               />
             </div>
 
@@ -51,23 +113,28 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)]"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[var(--color-accent)] text-white py-3 rounded-xl font-medium"
+              disabled={loading}
+              className="w-full bg-[var(--color-accent)] text-white py-3 rounded-xl font-medium hover:opacity-90 transition disabled:opacity-50"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           <p className="text-center mt-6 text-sm text-[var(--color-text-muted)]">
             Already have an account?{" "}
-            <button className="text-[var(--color-accent)] font-medium">
+            <Link to="/login" className="text-[var(--color-accent)] font-medium hover:underline">
               Sign In
-            </button>
+            </Link>
           </p>
         </div>
       </div>
