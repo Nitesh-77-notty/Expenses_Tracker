@@ -1,6 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await login({ email, password });
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Failed to login");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] flex">
       {/* Right Section */}
@@ -15,7 +34,13 @@ const Login = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="block mb-2 text-sm font-medium text-[var(--color-text-primary)]">
                 Email
@@ -24,6 +49,9 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="john@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-white outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
               />
             </div>
@@ -36,6 +64,9 @@ const Login = () => {
               <input
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-white outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-light)]"
               />
             </div>
@@ -46,27 +77,28 @@ const Login = () => {
                 Remember me
               </label>
 
-              <button
-                type="button"
+              <Link
+                to="/forgot-password"
                 className="text-[var(--color-accent)] hover:underline"
               >
                 Forgot Password?
-              </button>
+              </Link>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[var(--color-accent)] text-white py-3 rounded-xl font-medium hover:opacity-90 transition"
+              disabled={loading}
+              className="w-full bg-[var(--color-accent)] text-white py-3 rounded-xl font-medium hover:opacity-90 transition disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
 
           <p className="text-center mt-6 text-sm text-[var(--color-text-muted)]">
             Don't have an account?{" "}
-            <button className="text-[var(--color-accent)] font-medium hover:underline">
+            <Link to="/register" className="text-[var(--color-accent)] font-medium hover:underline">
               Sign Up
-            </button>
+            </Link>
           </p>
         </div>
       </div>
