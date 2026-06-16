@@ -11,6 +11,7 @@ import Register from "./pages/Register.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
+import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthContext";
 
 const ProtectedRoute = ({ children }) => {
@@ -51,9 +52,30 @@ const PublicRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <Routes>
-      <Route
-        path="/login"
+    <>
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+        containerClassName="hot-toast-container"
+        toastOptions={{
+          className: "hot-toast-bar",
+          success: {
+            iconTheme: {
+              primary: "var(--color-green)",
+              secondary: "white",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "var(--color-red)",
+              secondary: "white",
+            },
+          },
+        }}
+      />
+      <Routes>
+        <Route
+          path="/login"
         element={
           <PublicRoute>
             <Login />
@@ -144,6 +166,7 @@ const App = () => {
         }
       />
     </Routes>
+    </>
   );
 };
 

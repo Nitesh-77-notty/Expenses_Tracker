@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const { token } = useParams();
   const navigate = useNavigate();
@@ -14,11 +13,9 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -26,13 +23,13 @@ const ResetPassword = () => {
     try {
       const response = await resetPassword(token, { password });
       if (response.success) {
-        setSuccess("Password has been reset successfully. Redirecting to login...");
+        toast.success("Password has been reset successfully. Redirecting to login...");
         setTimeout(() => {
           navigate("/login");
         }, 3000);
       }
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      toast.error(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -50,18 +47,6 @@ const ResetPassword = () => {
               Create a new password for your account
             </p>
           </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-              {success}
-            </div>
-          )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>

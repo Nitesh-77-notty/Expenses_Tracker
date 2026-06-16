@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,8 +10,6 @@ const Register = () => {
     password: "",
     confirmPassword: ""
   });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const { register, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -24,11 +23,9 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -40,16 +37,17 @@ const Register = () => {
       });
 
       if (response.success) {
-        setSuccess("Registration successful. Please check your email for verification link.");
+        toast.success("Registration successful! Please verify your email.");
         setFormData({
           username: "",
           email: "",
           password: "",
           confirmPassword: ""
         });
+        navigate("/login");
       }
     } catch (err) {
-      setError(err.message || "Registration failed");
+      toast.error(err.message || "Registration failed");
     }
   };
 
@@ -65,18 +63,6 @@ const Register = () => {
               Start managing your finances with SpendWise
             </p>
           </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-              {success}
-            </div>
-          )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>

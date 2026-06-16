@@ -10,6 +10,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -23,6 +24,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully");
   };
 
   const getInitials = (name) => {

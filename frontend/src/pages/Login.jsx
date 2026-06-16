@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     try {
       await login({ email, password });
+      toast.success("Welcome back!");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Failed to login");
+      toast.error(err.message || "Failed to login");
     }
   };
 
@@ -33,12 +33,6 @@ const Login = () => {
               Sign in to continue to SpendWise
             </p>
           </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import * as authApi from "../services/authApi";
+import toast from "react-hot-toast";
 
 const VerifyEmail = () => {
   const { token } = useParams();
@@ -14,10 +15,12 @@ const VerifyEmail = () => {
         if (response.success) {
           setStatus("success");
           setMessage("Email verified successfully! You can now log in.");
+          toast.success("Email verified successfully!");
         }
       } catch (error) {
         setStatus("error");
         setMessage(error.message || "Email verification failed. The link may be invalid or expired.");
+        toast.error("Email verification failed.");
       }
     };
 

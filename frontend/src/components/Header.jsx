@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import toast from "react-hot-toast";
 import MainButton from "./MainButton.jsx";
 import { Menu, X } from "lucide-react";
 
@@ -83,6 +84,11 @@ export default function Header({
   };
   const displayTitle = overrideTitle || pageInfo.title;
   const displaySubtitle = pageInfo.subtitle;
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+  };
 
   const markAllRead = () =>
     setNotifs((prev) => prev.map((n) => ({ ...n, unread: false })));
@@ -256,7 +262,7 @@ export default function Header({
               </div>
               <div className="border-t border-gray-200 py-1">
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 cursor-pointer transition-colors duration-150"
                 >
                   Log out
