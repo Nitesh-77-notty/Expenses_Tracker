@@ -84,10 +84,10 @@ const Sidebar = () => {
       </div>
 
       {/* Bottom Section: User & Logout */}
-      <div className="p-4 border-t border-gray-200 space-y-3">
+      <div className="p-4 border-t border-gray-200 flex items-center justify-between gap-2">
         {/* User Profile Info */}
-        <div className="flex items-center gap-3 px-2 py-1.5">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
             {getInitials(user?.username)}
           </div>
           <div className="flex flex-col min-w-0">
@@ -103,10 +103,10 @@ const Sidebar = () => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group cursor-pointer"
+          title="Logout"
+          className="p-2 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 group cursor-pointer shrink-0"
         >
-          <LogOut className="w-5 h-5 text-red-500 transition-transform duration-200 group-hover:-translate-x-0.5" />
-          <span>Logout</span>
+          <LogOut className="w-5 h-5 text-red-500 transition-transform duration-200 group-hover:scale-110" />
         </button>
       </div>
     </aside>
