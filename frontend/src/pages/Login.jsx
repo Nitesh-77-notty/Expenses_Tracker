@@ -53,9 +53,17 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium text-[var(--color-text-primary)]">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-[var(--color-text-primary)]">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-[var(--color-accent)] hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
 
               <div className="relative">
                 <input
@@ -74,20 +82,6 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-[var(--color-text-muted)]">
-                <input type="checkbox" />
-                Remember me
-              </label>
-
-              <Link
-                to="/forgot-password"
-                className="text-[var(--color-accent)] hover:underline"
-              >
-                Forgot Password?
-              </Link>
             </div>
 
             <button
