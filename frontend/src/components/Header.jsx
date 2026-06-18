@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import toast from "react-hot-toast";
@@ -74,6 +74,23 @@ export default function Header({
   const [showProfile, setShowProfile] = useState(false);
   const [notifs, setNotifs] = useState(NOTIFICATIONS);
 
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifs(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const unreadCount = notifs.filter((n) => n.unread).length;
 
   // Resolve page info based on path or override prop
@@ -128,7 +145,7 @@ export default function Header({
       {/* Right Side: Notification Icon & Profile Icon */}
       <div className="flex items-center gap-3">
         {/* Notifications Icon with Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={notifRef}>
           <button
             onClick={() => {
               setShowNotifs((v) => !v);
@@ -208,7 +225,7 @@ export default function Header({
           <MainButton onClick={onButtonClick}>{pageInfo.buttonName}</MainButton>
         )}
         {/* Profile / User Info */}
-        <div className="relative">
+        <div className="relative" ref={profileRef}>
           <button
             onClick={() => {
               setShowProfile((v) => !v);
