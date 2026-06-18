@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AddExpenseModal from "../components/AddExpenseModal";
+import Header from "../components/Header";
 
 const mockExpenses = [
   {
@@ -114,6 +115,7 @@ const Expenses = () => {
 
   return (
     <div className="p-6">
+      <Header onButtonClick={() => setShowModal(true)} />
       <div className="flex items-center gap-2 mb-4">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 ">
           <svg
