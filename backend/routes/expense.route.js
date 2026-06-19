@@ -7,13 +7,21 @@ import {
   deleteExpense,
 } from "../controllers/expense.controller.js";
 import auth from "../middleware/auth.middleware.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
-router.use(auth); // apply auth to all expense routes
+router.use(auth);
 
-router.route("/").get(getExpenses).post(createExpense);
+router
+  .route("/")
+  .get(asyncHandler(getExpenses))
+  .post(asyncHandler(createExpense));
 
-router.route("/:id").get(getExpenseById).put(updateExpense).delete(deleteExpense);
+router
+  .route("/:id")
+  .get(asyncHandler(getExpenseById))
+  .put(asyncHandler(updateExpense))
+  .delete(asyncHandler(deleteExpense));
 
 export default router;
