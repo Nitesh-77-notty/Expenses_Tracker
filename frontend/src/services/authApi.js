@@ -24,7 +24,7 @@ export const login = async (data) => {
       },
       body: JSON.stringify(data),
     },
-    false,
+    true,
   );
 };
 

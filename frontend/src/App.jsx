@@ -13,7 +13,7 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthContext";
-
+import PageNotFound from "./pages/PageNotFound.jsx";
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -73,99 +73,24 @@ const App = () => {
           },
         }}
       />
-      <Routes>
-        <Route
-          path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password/:token"
-        element={
-          <PublicRoute>
-            <ResetPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/verify-email/:token"
-        element={
-          <PublicRoute>
-            <VerifyEmail />
-          </PublicRoute>
-        }
-      />
+   <Routes>
+  {/* Public Routes */}
+  <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+  <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+  <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+  <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+  <Route path="/verify-email/:token" element={<PublicRoute><VerifyEmail /></PublicRoute>} />
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/expenses"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Expenses />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/categories"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Categories />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/budgets"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Budgets />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analytics"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Analytics />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+  {/* Protected Routes */}
+  <Route path="/" element={<ProtectedRoute><MainLayout><Dashboard /></MainLayout></ProtectedRoute>} />
+  <Route path="/expenses" element={<ProtectedRoute><MainLayout><Expenses /></MainLayout></ProtectedRoute>} />
+  <Route path="/categories" element={<ProtectedRoute><MainLayout><Categories /></MainLayout></ProtectedRoute>} />
+  <Route path="/budgets" element={<ProtectedRoute><MainLayout><Budgets /></MainLayout></ProtectedRoute>} />
+  <Route path="/analytics" element={<ProtectedRoute><MainLayout><Analytics /></MainLayout></ProtectedRoute>} />
+
+  {/* 404 Route - Always Last */}
+  <Route path="*" element={<PageNotFound />} />
+</Routes>
     </>
   );
 };
