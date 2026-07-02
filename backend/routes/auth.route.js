@@ -20,5 +20,4 @@ Router.post("/forgot-password", asyncHandler(forgotPassword));
 Router.post("/reset-password/:token", asyncHandler(resetPassword));
 Router.get("/me", auth, asyncHandler(getMe));
 
-
 export default Router;

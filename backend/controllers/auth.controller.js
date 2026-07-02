@@ -98,7 +98,7 @@ export const login = async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
@@ -115,7 +115,6 @@ export const getMe = async (req, res) => {
     data: req.user,
   });
 };
-
 
 export const logout = async (req, res) => {
   res.clearCookie("token", {
@@ -139,7 +138,9 @@ export const forgotPassword = async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ message: "User with this email does not exist" });
+    return res
+      .status(400)
+      .json({ message: "User with this email does not exist" });
   }
 
   // Generate reset token
