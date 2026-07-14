@@ -1,123 +1,112 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddExpenseModal from "../components/AddExpenseModal";
-import Header from "../components/Header";
-
-const mockExpenses = [
-  {
-    _id: "1",
-    description: "Whole Foods Market",
-    note: "Weekly groceries",
-    category: { name: "Food & dining", emoji: "🍔", color: "#f97316" },
-    date: "2025-06-13",
-    amount: 68,
-  },
-  {
-    _id: "2",
-    description: "Uber",
-    note: "Airport ride",
-    category: { name: "Transport", emoji: "🚗", color: "#2563eb" },
-    date: "2025-06-12",
-    amount: 14,
-  },
-  {
-    _id: "3",
-    description: "Netflix",
-    note: "Monthly sub",
-    category: { name: "Entertainment", emoji: "🎮", color: "#d97706" },
-    date: "2025-06-12",
-    amount: 18,
-  },
-  {
-    _id: "4",
-    description: "CVS Pharmacy",
-    note: "Medicine",
-    category: { name: "Health", emoji: "💊", color: "#059669" },
-    date: "2025-06-11",
-    amount: 43,
-  },
-  {
-    _id: "5",
-    description: "Amazon",
-    note: "Desk accessories",
-    category: { name: "Shopping", emoji: "🛍️", color: "#7c3aed" },
-    date: "2025-06-10",
-    amount: 127,
-  },
-  {
-    _id: "6",
-    description: "Electricity bill",
-    note: "June payment",
-    category: { name: "Utilities", emoji: "⚡", color: "#6366f1" },
-    date: "2025-06-09",
-    amount: 89,
-  },
-  {
-    _id: "7",
-    description: "Starbucks",
-    note: "",
-    category: { name: "Food & dining", emoji: "🍔", color: "#f97316" },
-    date: "2025-06-08",
-    amount: 7,
-  },
-  {
-    _id: "8",
-    description: "Gym membership",
-    note: "Monthly",
-    category: { name: "Health", emoji: "💊", color: "#059669" },
-    date: "2025-06-07",
-    amount: 45,
-  },
-];
-
-const categories = [
-  "All categories",
-  "Food & dining",
-  "Transport",
-  "Shopping",
-  "Health",
-  "Entertainment",
-  "Utilities",
-];
+import { useExpenses } from "../context/ExpenseContext";
+import { useCategories } from "../context/CategoryContext";
+import { useUI } from "../context/UIContext";
+import toast from "react-hot-toast";
 
 const Expenses = () => {
+  const {
+    expenses,
+    totalExpenses,
+    totalPages,
+    fetchExpenses,
+    addExpense,
+    updateExpense,
+    deleteExpense,
+  } = useExpenses();
+  const { categories } = useCategories();
+  const { setOnButtonClick } = useUI();
+
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("All categories");
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({
-    description: "",
-    amount: "",
-    date: "",
-    categoryId: "",
-    note: "",
-  });
+  const [editingExpense, setEditingExpense] = useState(null);
 
-  const filtered = mockExpenses.filter((e) => {
-    const matchSearch = e.description
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchCat =
-      category === "All categories" || e.category.name === category;
-    return matchSearch && matchCat;
-  });
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // TODO: POST /api/expenses
-    setShowModal(false);
-    setForm({
-      description: "",
-      amount: "",
-      date: "",
-      categoryId: "",
-      note: "",
+  // Hook up Add Expense button in Header
+  useEffect(() => {
+    setOnButtonClick(() => () => {
+      setEditingExpense(null);
+      setShowModal(true);
     });
+    return () => setOnButtonClick(null);
+  }, [setOnButtonClick]);
+
+  // Fetch expenses when dependencies change
+  useEffect(() => {
+    const params = {
+      page,
+      limit: 10,
+    };
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (category !== "All categories") params.categoryId = category;
+
+    fetchExpenses(params);
+  }, [debouncedSearch, category, page]);
+
+  const handleSubmit = async (formData) => {
+    try {
+      if (editingExpense) {
+        await updateExpense(editingExpense._id, formData);
+        toast.success("Expense updated successfully");
+      } else {
+        await addExpense(formData);
+        toast.success("Expense added successfully");
+      }
+      // Refetch current page
+      const params = {
+        page,
+        limit: 10,
+      };
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (category !== "All categories") params.categoryId = category;
+      fetchExpenses(params);
+      setShowModal(false);
+      setEditingExpense(null);
+    } catch (err) {
+      toast.error(err.message || "Failed to save expense");
+    }
+  };
+
+  const handleEditClick = (expense) => {
+    setEditingExpense(expense);
+    setShowModal(true);
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm("Are you sure you want to delete this expense?")) {
+      try {
+        await deleteExpense(id);
+        toast.success("Expense deleted successfully");
+        // Refetch current page
+        const params = {
+          page,
+          limit: 10,
+        };
+        if (debouncedSearch) params.search = debouncedSearch;
+        if (category !== "All categories") params.categoryId = category;
+        fetchExpenses(params);
+      } catch (err) {
+        toast.error(err.message || "Failed to delete expense");
+      }
+    }
   };
 
   return (
     <div className="p-6">
-      <Header onButtonClick={() => setShowModal(true)} />
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 ">
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 shadow-sm">
           <svg
             className="w-4 h-4 text-gray-400"
             fill="none"
@@ -136,22 +125,28 @@ const Expenses = () => {
             placeholder="Search expenses..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent text-sm text-gray-900 outline-none w-full  placeholder-gray-400"
+            className="bg-transparent text-sm text-gray-900 outline-none w-full placeholder-gray-400"
           />
         </div>
         <select
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="bg-white border border-gray-200 rounded-lg px-3 h-9 text-sm text-gray-700 outline-none cursor-pointer"
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setPage(1);
+          }}
+          className="bg-white border border-gray-200 rounded-lg px-3 h-9 text-sm text-gray-700 outline-none cursor-pointer shadow-sm"
         >
+          <option value="All categories">All categories</option>
           {categories.map((c) => (
-            <option key={c}>{c}</option>
+            <option key={c._id} value={c._id}>
+              {c.emoji} {c.name}
+            </option>
           ))}
         </select>
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-t-xl overflow-hidden shadow-sm">
         <table
           className="w-full border-collapse"
           style={{ tableLayout: "fixed" }}
@@ -179,7 +174,7 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {expenses.length === 0 ? (
               <tr>
                 <td
                   colSpan={6}
@@ -189,7 +184,7 @@ const Expenses = () => {
                 </td>
               </tr>
             ) : (
-              filtered.map((expense) => (
+              expenses.map((expense) => (
                 <tr
                   key={expense._id}
                   className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
@@ -198,9 +193,9 @@ const Expenses = () => {
                     <div className="flex items-center gap-2.5">
                       <div
                         className="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
-                        style={{ background: expense.category.color + "18" }}
+                        style={{ background: (expense.categoryId?.color || "#6366f1") + "18" }}
                       >
-                        {expense.category.emoji}
+                        {expense.categoryId?.emoji || "📦"}
                       </div>
                       <span className="text-sm font-medium text-gray-900 truncate">
                         {expense.description}
@@ -211,11 +206,11 @@ const Expenses = () => {
                     <span
                       className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                       style={{
-                        background: expense.category.color + "18",
-                        color: expense.category.color,
+                        background: (expense.categoryId?.color || "#6366f1") + "18",
+                        color: expense.categoryId?.color || "#6366f1",
                       }}
                     >
-                      {expense.category.name}
+                      {expense.categoryId?.name || "Unknown"}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500">
@@ -228,11 +223,14 @@ const Expenses = () => {
                     {expense.note || "—"}
                   </td>
                   <td className="px-4 py-3 text-sm font-semibold text-gray-900 text-right">
-                    ${expense.amount}
+                    ${expense.amount.toFixed(2)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-1 rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+                      <button
+                        onClick={() => handleEditClick(expense)}
+                        className="p-1 rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors cursor-pointer"
+                      >
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -247,7 +245,10 @@ const Expenses = () => {
                           />
                         </svg>
                       </button>
-                      <button className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                      <button
+                        onClick={() => handleDeleteClick(expense._id)}
+                        className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                      >
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -271,8 +272,79 @@ const Expenses = () => {
         </table>
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-xl border border-t-0 border-gray-200 shadow-sm">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Showing page <span className="font-medium">{page}</span> of{" "}
+                <span className="font-medium">{totalPages}</span> (<span className="font-medium">{totalExpenses}</span> total expenses)
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 cursor-pointer"
+                >
+                  <span className="sr-only">Previous</span>
+                  &larr;
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 cursor-pointer ${
+                      p === page
+                        ? "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 cursor-pointer"
+                >
+                  <span className="sr-only">Next</span>
+                  &rarr;
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal */}
-      <AddExpenseModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <AddExpenseModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingExpense(null);
+        }}
+        onSubmit={handleSubmit}
+        editingExpense={editingExpense}
+      />
     </div>
   );
 };

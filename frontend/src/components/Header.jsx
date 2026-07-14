@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useUI } from "../context/UIContext.jsx";
 import toast from "react-hot-toast";
 import MainButton from "./MainButton.jsx";
 import { Menu, X } from "lucide-react";
@@ -65,10 +66,12 @@ const NOTIFICATIONS = [
 export default function Header({
   title: overrideTitle,
   sidebarWidth = 240,
-  onButtonClick,
+  onButtonClick: propOnButtonClick,
 }) {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const uiContext = useUI();
+  const onButtonClick = propOnButtonClick || uiContext?.onButtonClick;
 
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfile, setShowProfile] = useState(false);

@@ -23,11 +23,15 @@ export const createExpense = async (req, res) => {
 // @route   GET /api/expenses
 // @access  Private
 export const getExpenses = async (req, res) => {
-  const { categoryId, startDate, endDate, page = 1, limit = 10 } = req.query;
+  const { categoryId, startDate, endDate, search, page = 1, limit = 10 } = req.query;
 
   const filter = { userId: req.user._id };
 
   if (categoryId) filter.categoryId = categoryId;
+
+  if (search) {
+    filter.description = { $regex: search, $options: "i" };
+  }
 
   if (startDate || endDate) {
     filter.date = {};
@@ -39,7 +43,7 @@ export const getExpenses = async (req, res) => {
 
   const [expenses, total] = await Promise.all([
     Expense.find(filter)
-      .populate("categoryId", "name")
+      .populate("categoryId", "name emoji color")
       .sort({ date: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -68,7 +72,7 @@ export const getExpenseById = async (req, res) => {
   const expense = await Expense.findOne({
     _id: req.params.id,
     userId: req.user._id,
-  }).populate("categoryId", "name");
+  }).populate("categoryId", "name emoji color");
 
   if (!expense) {
     return res
@@ -95,7 +99,7 @@ export const updateExpense = async (req, res) => {
     { _id: req.params.id, userId: req.user._id },
     { categoryId, amount, description, note, date },
     { new: true, runValidators: true },
-  ).populate("categoryId", "name");
+  ).populate("categoryId", "name emoji color");
 
   if (!expense) {
     return res

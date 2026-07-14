@@ -4,6 +4,9 @@ dotenv.config({
 });
 
 import authRoutes from "./routes/auth.route.js";
+import expenseRoutes from "./routes/expense.route.js";
+import categoryRoutes from "./routes/category.route.js";
+import budgetRoutes from "./routes/budget.route.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -24,6 +27,9 @@ app.use(
 
 // Routess
 app.use("/api/auth", authRoutes);
+app.use("/api/expenses", expenseRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/budgets", budgetRoutes);
 
 app.use(errorMiddleware);
 

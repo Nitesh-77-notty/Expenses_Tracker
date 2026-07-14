@@ -35,6 +35,19 @@ export const createCategory = async (req, res) => {
 export const getCategories = async (req, res) => {
   const { isDefault } = req.query;
 
+  const totalCount = await Category.countDocuments({ userId: req.user._id });
+  if (totalCount === 0) {
+    const defaults = [
+      { name: "Food & dining", emoji: "🍔", color: "#f97316", isDefault: true, userId: req.user._id },
+      { name: "Transport", emoji: "🚗", color: "#2563eb", isDefault: true, userId: req.user._id },
+      { name: "Shopping", emoji: "🛍️", color: "#7c3aed", isDefault: false, userId: req.user._id },
+      { name: "Health", emoji: "💊", color: "#059669", isDefault: true, userId: req.user._id },
+      { name: "Entertainment", emoji: "🎮", color: "#d97706", isDefault: false, userId: req.user._id },
+      { name: "Utilities", emoji: "⚡", color: "#6366f1", isDefault: true, userId: req.user._id },
+    ];
+    await Category.insertMany(defaults);
+  }
+
   const filter = { userId: req.user._id };
   if (isDefault !== undefined) filter.isDefault = isDefault === "true";
 

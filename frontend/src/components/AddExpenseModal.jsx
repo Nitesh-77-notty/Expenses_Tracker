@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./Modal";
+import { useCategories } from "../context/CategoryContext.jsx";
 
-const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
+const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
+  const { categories } = useCategories();
   const [form, setForm] = useState({
     description: "",
     amount: "",
@@ -10,9 +12,32 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
     note: "",
   });
 
+  useEffect(() => {
+    if (editingExpense) {
+      setForm({
+        description: editingExpense.description || "",
+        amount: editingExpense.amount || "",
+        date: editingExpense.date ? new Date(editingExpense.date).toISOString().split("T")[0] : "",
+        categoryId: typeof editingExpense.categoryId === "object" ? editingExpense.categoryId?._id : editingExpense.categoryId || "",
+        note: editingExpense.note || "",
+      });
+    } else {
+      setForm({
+        description: "",
+        amount: "",
+        date: new Date().toISOString().split("T")[0],
+        categoryId: "",
+        note: "",
+      });
+    }
+  }, [editingExpense, isOpen]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      amount: Number(form.amount),
+    });
     setForm({
       description: "",
       amount: "",
@@ -24,7 +49,7 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add expense">
+    <Modal isOpen={isOpen} onClose={onClose} title={editingExpense ? "Edit expense" : "Add expense"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -38,6 +63,8 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
               className="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50"
               required
+              step="0.01"
+              min="0"
             />
           </div>
           <div>
@@ -79,12 +106,11 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
             required
           >
             <option value="">Select category</option>
-            <option value="food">🍔 Food & dining</option>
-            <option value="transport">🚗 Transport</option>
-            <option value="shopping">🛍️ Shopping</option>
-            <option value="health">💊 Health</option>
-            <option value="entertainment">🎮 Entertainment</option>
-            <option value="utilities">⚡ Utilities</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.emoji} {c.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -111,7 +137,7 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit }) => {
             type="submit"
             className="px-4 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors cursor-pointer"
           >
-            Save expense
+            {editingExpense ? "Update expense" : "Save expense"}
           </button>
         </div>
       </form>

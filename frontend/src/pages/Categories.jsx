@@ -1,93 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddCategoryModal from "../components/AddCategoryModal.jsx";
-import Header from "../components/Header.jsx";
-
-const mockCategories = [
-  {
-    _id: "1",
-    name: "Food & dining",
-    emoji: "🍔",
-    color: "#f97316",
-    isDefault: true,
-    expenseCount: 12,
-    totalSpent: 820,
-  },
-  {
-    _id: "2",
-    name: "Transport",
-    emoji: "🚗",
-    color: "#2563eb",
-    isDefault: true,
-    expenseCount: 8,
-    totalSpent: 430,
-  },
-  {
-    _id: "3",
-    name: "Shopping",
-    emoji: "🛍️",
-    color: "#7c3aed",
-    isDefault: false,
-    expenseCount: 5,
-    totalSpent: 610,
-  },
-  {
-    _id: "4",
-    name: "Health",
-    emoji: "💊",
-    color: "#059669",
-    isDefault: true,
-    expenseCount: 4,
-    totalSpent: 340,
-  },
-  {
-    _id: "5",
-    name: "Entertainment",
-    emoji: "🎮",
-    color: "#d97706",
-    isDefault: false,
-    expenseCount: 3,
-    totalSpent: 250,
-  },
-  {
-    _id: "6",
-    name: "Utilities",
-    emoji: "⚡",
-    color: "#6366f1",
-    isDefault: true,
-    expenseCount: 2,
-    totalSpent: 390,
-  },
-];
+import { useCategories } from "../context/CategoryContext.jsx";
+import { useExpenses } from "../context/ExpenseContext.jsx";
+import { useUI } from "../context/UIContext.jsx";
+import toast from "react-hot-toast";
 
 const Categories = () => {
-  const [categories, setCategories] = useState(mockCategories);
+  const { categories, addCategory, deleteCategory } = useCategories();
+  const { fetchAllExpenses } = useExpenses();
+  const { setOnButtonClick } = useUI();
+  const [expenses, setExpenses] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
 
-  const filtered = categories.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()),
+  useEffect(() => {
+    setOnButtonClick(() => () => setShowModal(true));
+    return () => setOnButtonClick(null);
+  }, [setOnButtonClick]);
+
+  useEffect(() => {
+    const loadExpenses = async () => {
+      try {
+        const data = await fetchAllExpenses();
+        setExpenses(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadExpenses();
+  }, [categories]);
+
+  // Compute category stats
+  const categoriesWithStats = categories.map((c) => {
+    const catExpenses = expenses.filter((e) => {
+      const catId = typeof e.categoryId === "object" ? e.categoryId?._id : e.categoryId;
+      return catId === c._id;
+    });
+    const totalSpent = catExpenses.reduce((sum, e) => sum + e.amount, 0);
+    return {
+      ...c,
+      expenseCount: catExpenses.length,
+      totalSpent,
+    };
+  });
+
+  const filtered = categoriesWithStats.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAdd = (newCategory) => {
-    setCategories((prev) => [
-      ...prev,
-      {
-        ...newCategory,
-        _id: Date.now().toString(),
-        expenseCount: 0,
-        totalSpent: 0,
-      },
-    ]);
+  const handleAdd = async (newCategory) => {
+    try {
+      await addCategory(newCategory);
+      toast.success("Category added successfully");
+    } catch (err) {
+      toast.error(err.message || "Failed to add category");
+    }
   };
 
-  const handleDelete = (id) => {
-    setCategories((prev) => prev.filter((c) => c._id !== id));
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        await deleteCategory(id);
+        toast.success("Category deleted successfully");
+      } catch (err) {
+        toast.error(err.message || "Failed to delete category");
+      }
+    }
   };
 
   return (
     <div className="p-6">
-      {/* Filters */}
-      <Header onButtonClick={() => setShowModal(true)} />
+      {/* Search Filter */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 max-w-md shadow-sm">
+          <svg
+            className="w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search categories..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="bg-transparent text-sm text-gray-900 outline-none w-full placeholder-gray-400"
+          />
+        </div>
+      </div>
 
       {/* Grid */}
       {filtered.length === 0 ? (
@@ -125,25 +132,10 @@ const Categories = () => {
                 </div>
               </div>
               <div className="flex items-center gap-1 ml-2">
-                <button className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828A2 2 0 019 16H7v-2a2 2 0 01.586-1.414z"
-                    />
-                  </svg>
-                </button>
                 {!cat.isDefault && (
                   <button
                     onClick={() => handleDelete(cat._id)}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                   >
                     <svg
                       className="w-4 h-4"
