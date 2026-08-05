@@ -69,7 +69,7 @@ const Categories = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Search Filter */}
       <div className="flex items-center gap-2 mb-6">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 max-w-md shadow-sm">

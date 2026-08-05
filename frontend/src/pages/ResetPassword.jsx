@@ -40,8 +40,8 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] flex">
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg p-8">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg p-6 sm:p-8">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
               Reset Password

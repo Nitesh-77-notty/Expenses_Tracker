@@ -8,11 +8,12 @@ import {
   LogOut,
   TrendingUp,
   BarChart3,
+  X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -37,16 +38,26 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-200 flex flex-col justify-between z-50">
+    <aside className={`w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-200 flex flex-col justify-between z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Top Section: Logo */}
       <div className="flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200 gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center shadow-md shadow-indigo-200">
-            <TrendingUp className="w-5 h-5 text-white" />
+        <div className="h-16 flex items-center px-6 border-b border-gray-200 justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center shadow-md shadow-indigo-200">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-lg text-gray-900 tracking-tight">
+              SpendWise
+            </span>
           </div>
-          <span className="font-bold text-lg text-gray-900 tracking-tight">
-            SpendWise
-          </span>
+          {/* Close button for mobile */}
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 cursor-pointer"
+            aria-label="Close menu"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Navigation Links */}
@@ -57,6 +68,7 @@ const Sidebar = () => {
               <NavLink
                 key={item.name}
                 to={item.path}
+                onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
                     isActive

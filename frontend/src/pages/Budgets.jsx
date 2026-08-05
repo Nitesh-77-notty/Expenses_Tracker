@@ -119,7 +119,7 @@ const Budgets = () => {
   const yearsRange = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1];
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5">
       {/* Date Selectors */}
       <div className="flex gap-2 max-w-xs bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
         <select
@@ -197,7 +197,7 @@ const Budgets = () => {
         </p>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
           <div className="bg-gray-50 rounded-xl p-4">
             <p className="text-xs text-gray-500 mb-1">Total Spent</p>
             <p className="text-lg font-bold text-red-500">
@@ -276,25 +276,29 @@ const Budgets = () => {
               return (
                 <div
                   key={cat._id}
-                  className="grid items-center gap-4"
+                  className="flex flex-col sm:grid sm:items-center gap-2 sm:gap-4 border-b border-gray-50 pb-3 last:border-0 last:pb-0"
                   style={{ gridTemplateColumns: "1fr 80px 48px 1fr" }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-lg">{cat.emoji}</span>
-                    <span className="text-sm font-medium text-gray-800">
-                      {cat.name}
-                    </span>
+                  <div className="flex items-center justify-between sm:contents">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-lg shrink-0">{cat.emoji}</span>
+                      <span className="text-sm font-medium text-gray-800 truncate">
+                        {cat.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2.5 sm:contents">
+                      <span className="text-sm font-semibold text-gray-900 text-right sm:col-start-2">
+                        $
+                        {cat.spent.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                      <span className="text-xs text-gray-400 text-right sm:col-start-3">
+                        {catPct}%
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold text-gray-900 text-right">
-                    $
-                    {cat.spent.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
-                  <span className="text-xs text-gray-400 text-right">
-                    {catPct}%
-                  </span>
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden w-full sm:col-start-4">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${barPct}%`, background: cat.color || "#059669" }}

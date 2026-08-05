@@ -352,9 +352,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5">
       {/* Metric cards */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             label: "Total spent",
@@ -393,7 +393,7 @@ const Dashboard = () => {
       </div>
 
       {/* Chart + Category breakdown */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-medium text-gray-900">
@@ -443,7 +443,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent expenses + Budget progress */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-medium text-gray-900">Recent expenses</p>

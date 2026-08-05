@@ -104,8 +104,8 @@ const Expenses = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-9 flex-1 shadow-sm">
           <svg
             className="w-4 h-4 text-gray-400"
@@ -134,7 +134,7 @@ const Expenses = () => {
             setCategory(e.target.value);
             setPage(1);
           }}
-          className="bg-white border border-gray-200 rounded-lg px-3 h-9 text-sm text-gray-700 outline-none cursor-pointer shadow-sm"
+          className="bg-white border border-gray-200 rounded-lg px-3 h-9 text-sm text-gray-700 outline-none cursor-pointer shadow-sm w-full sm:w-auto"
         >
           <option value="All categories">All categories</option>
           {categories.map((c) => (
@@ -147,129 +147,131 @@ const Expenses = () => {
 
       {/* Table */}
       <div className="bg-white border border-gray-200 rounded-t-xl overflow-hidden shadow-sm">
-        <table
-          className="w-full border-collapse"
-          style={{ tableLayout: "fixed" }}
-        >
-          <colgroup>
-            <col style={{ width: "30%" }} />
-            <col style={{ width: "18%" }} />
-            <col style={{ width: "16%" }} />
-            <col style={{ width: "18%" }} />
-            <col style={{ width: "10%" }} />
-            <col style={{ width: "8%" }} />
-          </colgroup>
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              {["Description", "Category", "Date", "Note", "Amount", ""].map(
-                (h) => (
-                  <th
-                    key={h}
-                    className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide px-4 py-2.5"
-                  >
-                    {h}
-                  </th>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {expenses.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="text-center text-sm text-gray-400 py-10"
-                >
-                  No expenses found
-                </td>
-              </tr>
-            ) : (
-              expenses.map((expense) => (
-                <tr
-                  key={expense._id}
-                  className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
-                        style={{ background: (expense.categoryId?.color || "#6366f1") + "18" }}
-                      >
-                        {expense.categoryId?.emoji || "📦"}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900 truncate">
-                        {expense.description}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                      style={{
-                        background: (expense.categoryId?.color || "#6366f1") + "18",
-                        color: expense.categoryId?.color || "#6366f1",
-                      }}
+        <div className="overflow-x-auto">
+          <table
+            className="w-full border-collapse min-w-[800px]"
+            style={{ tableLayout: "fixed" }}
+          >
+            <colgroup>
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "18%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "18%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "8%" }} />
+            </colgroup>
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                {["Description", "Category", "Date", "Note", "Amount", ""].map(
+                  (h) => (
+                    <th
+                      key={h}
+                      className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide px-4 py-2.5"
                     >
-                      {expense.categoryId?.name || "Unknown"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-500">
-                    {new Date(expense.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-400 truncate">
-                    {expense.note || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-semibold text-gray-900 text-right">
-                    ${expense.amount.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleEditClick(expense)}
-                        className="p-1 rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors cursor-pointer"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828A2 2 0 019 16H7v-2a2 2 0 01.586-1.414z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(expense._id)}
-                        className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                      {h}
+                    </th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center text-sm text-gray-400 py-10"
+                  >
+                    No expenses found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                expenses.map((expense) => (
+                  <tr
+                    key={expense._id}
+                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+                          style={{ background: (expense.categoryId?.color || "#6366f1") + "18" }}
+                        >
+                          {expense.categoryId?.emoji || "📦"}
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {expense.description}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                        style={{
+                          background: (expense.categoryId?.color || "#6366f1") + "18",
+                          color: expense.categoryId?.color || "#6366f1",
+                        }}
+                      >
+                        {expense.categoryId?.name || "Unknown"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-500">
+                      {new Date(expense.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-400 truncate">
+                      {expense.note || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900 text-right">
+                      ${expense.amount.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleEditClick(expense)}
+                          className="p-1 rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors cursor-pointer"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828A2 2 0 019 16H7v-2a2 2 0 01.586-1.414z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(expense._id)}
+                          className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}

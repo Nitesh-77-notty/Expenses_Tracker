@@ -30,8 +30,8 @@ const VerifyEmail = () => {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center p-6">
-      <div className="w-full max-w-md bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg p-8 text-center">
+    <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg p-6 sm:p-8 text-center">
         {status === "verifying" && (
           <div>
             <h2 className="text-2xl font-bold mb-4">Verifying Email...</h2>
