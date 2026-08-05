@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Modal from "./Modal";
 import { useCategories } from "../context/CategoryContext.jsx";
 
+const getToday = () => new Date().toISOString().split("T")[0];
+
 const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
   const { categories } = useCategories();
   const [form, setForm] = useState({
@@ -11,29 +13,42 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
     categoryId: "",
     note: "",
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (editingExpense) {
       setForm({
         description: editingExpense.description || "",
         amount: editingExpense.amount || "",
-        date: editingExpense.date ? new Date(editingExpense.date).toISOString().split("T")[0] : "",
-        categoryId: typeof editingExpense.categoryId === "object" ? editingExpense.categoryId?._id : editingExpense.categoryId || "",
+        date: editingExpense.date
+          ? new Date(editingExpense.date).toISOString().split("T")[0]
+          : "",
+        categoryId:
+          typeof editingExpense.categoryId === "object"
+            ? editingExpense.categoryId?._id
+            : editingExpense.categoryId || "",
         note: editingExpense.note || "",
       });
     } else {
       setForm({
         description: "",
         amount: "",
-        date: new Date().toISOString().split("T")[0],
+        date: getToday(),
         categoryId: "",
         note: "",
       });
     }
+    setErrors({});
   }, [editingExpense, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (form.date > getToday()) {
+      setErrors({ date: "Expense date can't be in the future" });
+      return;
+    }
+
     onSubmit({
       ...form,
       amount: Number(form.amount),
@@ -45,11 +60,16 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
       categoryId: "",
       note: "",
     });
+    setErrors({});
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={editingExpense ? "Edit expense" : "Add expense"}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={editingExpense ? "Edit expense" : "Add expense"}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -74,10 +94,21 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
             <input
               type="date"
               value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50"
+              max={getToday()}
+              onChange={(e) => {
+                setForm({ ...form, date: e.target.value });
+                if (errors.date) setErrors({ ...errors, date: "" });
+              }}
+              className={`w-full h-9 border rounded-lg px-3 text-sm text-gray-900 outline-none focus:ring-2 ${
+                errors.date
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-50"
+                  : "border-gray-200 focus:border-indigo-400 focus:ring-indigo-50"
+              }`}
               required
             />
+            {errors.date && (
+              <p className="text-xs text-red-600 mt-1">{errors.date}</p>
+            )}
           </div>
         </div>
         <div>
@@ -88,9 +119,7 @@ const AddExpenseModal = ({ isOpen, onClose, onSubmit, editingExpense }) => {
             type="text"
             placeholder="What did you spend on?"
             value={form.description}
-            onChange={(e) =>
-              setForm({ ...form, description: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50"
             required
           />
